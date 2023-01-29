@@ -1,12 +1,16 @@
 const path = require('path');
-// gọi biến express trong node_moludes
+// để thêm module express vào project
 const express = require('express');
 const morgan = require('morgan');
 const { engine } = require ('express-handlebars');
-// gọi hàm 
+
+// tương đương với ./routes/index - nó sẽ tự nạp nếu file name là index
+const route = require('./routes'); 
+
+// khởi tạo một app mới sử dụng module express
 const app = express();
 
-// cổng port 3000
+// định nghĩa tên cổng để chạy ứng dụng Nodejs của bạn trên server
 const port = 3000;
 
 // cấu hình path cho những static file
@@ -24,22 +28,18 @@ app.set('view engine', 'hbs');
 // do cấu trúc project không giống với thư viện nên cần thay đổi đường dẫn đến views
 app.set('views', path.join(__dirname, 'resources/views'));
 
+// Middleware xử lý dữ liệu từ form gửi lên server 
+//(sử dụng khi dữ liêu gửi từ form html)
+app.use(express.urlencoded({extended: true}));
+// Middleware xử lý dữ liệu từ client gửi lên server qua thư viện (XLMHttpRequest, fetch, ajax) 
+//(sử dụng khi dữ liệu gửi từ code js)
+app.use(express.json());
 
-// cấu hình router 
-// http://localhost:3000/hello
-// req: request chứa thông số client truyền lên
-// res: response chứa thông số truyền về
-// send: trả về
-app.get('/', (req, res) => {
-    res.render('home');
-})
-
-app.get('/news', (req, res) => {
-    res.render('news');
-})
+// Routes init
+route(app);
 
 // 127.0.0.1 -> localhost
-
+// Hàm listen() sẽ khởi động server.
 app.listen(port, (req, res) => {
     return console.log(`Example app listening at http://localhost:${port}`);
 })
